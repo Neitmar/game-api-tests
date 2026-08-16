@@ -1,7 +1,7 @@
 import requests
 
-response = requests.get("https://www.freetogame.com/api/games?platform=pc")
+response = requests.get("https://www.freetogame.com/api/games?category=shooter")
 games = response.json()
 
-assert response.status_code == 200
-assert games[0]["title"] == "Overwatch", f"Получил: {games[0]['title']}"
+for game in games:
+    assert game["genre"] == "Shooter", f"Пришла игра не того жанра: {game['title']}"
