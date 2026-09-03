@@ -1,4 +1,4 @@
-import requests
+from api.client import FreeToGameClient
 import pytest
 
 @pytest.mark.xfail(
@@ -6,11 +6,15 @@ import pytest
     reason="BUG-001: фильтр ?category=shooter возвращает игры с другим genre",
 )
 def test_shooter_filter():
-    response = requests.get("https://www.freetogame.com/api/games?category=shooter")
-    games = response.json()
-    for game in games:
-        assert game["genre"] == "Shooter", f"Пришла игра не того жанра: {game['title']}"
+    client = FreeToGameClient()
+    response = client.get_games("shooter")
+    wrong_genre = []
+    for game in response.json():
+        if game["genre"] != "Shooter":
+            wrong_genre.append(game["title"])
+    assert len(wrong_genre) == 0, f"Игры не того жанра: {wrong_genre}"
 
 def test_status_code_is_200():
-    response = requests.get("https://www.freetogame.com/api/games")
+    client = FreeToGameClient()
+    response = client.get_games()
     assert response.status_code == 200
